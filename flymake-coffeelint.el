@@ -48,46 +48,28 @@
   :type 'boolean
   :group 'flymake-coffeelint)
 
-(defvar coffeelintnode-coffeelint-excludes nil
-  "a list of lisp symbols corresponding to coffeelint boolean options")
-
-(defvar coffeelintnode-coffeelint-includes nil
-  "a list of lisp symbols corresponding to coffeelint boolean options")
-
-(defvar coffeelintnode-coffeelint-set nil
-  "a string of comma seperated jslint options; values are seperated via colon, e.g. max_line_length:80,indentation:true,no_tabs:false")
+(defvar coffeelintnode-coffeelintrc "~/.coffeelintrc"
+  "The path to .coffeelintrc")
 
 (defun coffeelintnode-start ()
   "Start the coffeelintnode server.
 Uses `coffeelintnode-node-program' and `coffeelintnode-location'."
   (interactive)
   (message "Starting coffeelintnode")
-  (let ((coffeelintnode-location (expand-file-name (concat coffeelintnode-location "/app.js")))
-        (coffeelintnode-excludes (if (not coffeelintnode-coffeelint-excludes)
-				     ""
-				   (mapconcat 'identity
-					      (mapcar 'symbol-name
-						      coffeelintnode-coffeelint-excludes)
-					      ",")))
-	(coffeelintnode-includes (if (not coffeelintnode-coffeelint-includes)
-				     ""
-				   (mapconcat 'identity
-					      (mapcar 'symbol-name
-						      coffeelintnode-coffeelint-includes)
-					      ","))))
-    (start-process "coffeelintnode-server" "*coffeelintnode*"
-                   coffeelintnode-node-program
-                   coffeelintnode-location
-                   "--port" (number-to-string coffeelintnode-port)
-                   "--exclude" coffeelintnode-excludes
-		   "--include" coffeelintnode-includes
-		   "--set" coffeelintnode-coffeelint-set)
-    (sit-for 1)
-    ;; (let ((counter 5))
-    ;;   (while (and (not (get-buffer-process "*coffeelintnode*")) (> index 0))
-    ;; 	(sit-for 1)
-    ;; 	(setq index (1- counter))))
-    ))
+  (let
+    (coffeelintnode-location (expand-file-name (concat coffeelintnode-location "/app.js")))
+  )
+  (start-process "coffeelintnode-server" "*coffeelintnode*"
+                 coffeelintnode-node-program
+                 coffeelintnode-location
+                 "--port" (number-to-string coffeelintnode-port)
+                 "--coffeelintrc" coffeelintnode-coffeelintrc)
+  (sit-for 1)
+  ;; (let ((counter 5))
+  ;;   (while (and (not (get-buffer-process "*coffeelintnode*")) (> index 0))
+  ;;  (sit-for 1)
+  ;;  (setq index (1- counter))))
+  )
 
 (defun coffeelintnode-stop ()
   "stop the coffeelintnode server process"
@@ -107,10 +89,10 @@ Uses `coffeelintnode-node-program' and `coffeelintnode-location'."
    coffeelint process running. If there isn't we check to see if the user has set
    coffeelintnode-autostart to t, then start the process and flymake-mode."
   (let ((proc (get-buffer-process "*coffeelintnode*")))
-        (if (not proc)
-          (when coffeelintnode-autostart
-	    (coffeelintnode-start))
-        (flymake-mode 1))))
+    (if (not proc)
+        (when coffeelintnode-autostart
+          (coffeelintnode-start))
+      (flymake-mode 1))))
 
 (defun flymake-coffeelint-init ()
   (let* ((temp-file (flymake-init-create-temp-buffer-copy
@@ -122,7 +104,7 @@ Uses `coffeelintnode-node-program' and `coffeelintnode-location'."
     (list "curl" (list "--form" (format "source=<%s" local-file)
                        "--form" (format "filename=%s" local-file)
                        ;; FIXME: For some reason squid hates this curl invocation.
-                       "--proxy" ""
+                       ;; "--proxy" ""
                        coffeelint-url))))
 
 (setq flymake-allowed-file-name-masks

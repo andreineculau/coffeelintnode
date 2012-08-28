@@ -61,9 +61,7 @@ The following configuration should be useful in getting it to work:
 	;; Make sure we can find the lintnode executable
 	(setq coffeelintnode-location "path-to-coffeelintnode")
 	(setq coffeelintnode-node-program "path-to-node-executable")
-	(setq coffeelintnode-coffeelint-excludes (list 'max_line_length))
-	(setq coffeelintnode-coffeelint-includes '())
-	(setq coffeelintnode-coffeelint-set "")
+	(setq coffeelintnode-coffeelintrc "path-to-coffeelintrc")
 	;; Start the server when we first open a coffee file and start checking
 	(setq coffeelintnode-autostart 'true)
 	(add-hook 'coffee-mode-hook
@@ -79,18 +77,12 @@ Configuration
 -------------
 
 `coffeelint_port` may be passed on the node command line with the
-``--port`` parameter.  It defaults to 3004.
+`--port` parameter.  It defaults to 3004.
 
-`coffeelint_options` can be configured by passing the --exclude option to ``app.js``.
+`coffeelint_options` is set by passing `--coffeelintrc` to `app.js`.
 e.g.
 
-$ node app.js --exclude no_tabs,no_plusplus
-
-or
-
-$ node app.js --set max_line_length:80,indentation:2
-
-Alternatively they can be configured within emacs by setting the variable lintnode-jslint-excludes
+$ node app.js --coffeelintrc ~/.coffeelintrc
 
 For documentation on coffeelint's options, see `coffeelint
 options`_.
@@ -103,7 +95,7 @@ Support
 
 This project is hosted at github, which has a wiki and an issue tracker:
 
-  http://github.com/ajkavanagh/coffeelintnode
+  http://github.com/andreineculau/coffeelintnode
 
 
 License
